@@ -1,5 +1,3 @@
-#!/Users/nem2p/.local/share/virtualenvs/dbs-console-v2-WC-Np4Mt/bin/python
-
 import slack
 import os
 import requests
@@ -7,11 +5,20 @@ import requests
 from flask import Flask
 from slackeventsapi import SlackEventAdapter
 
-
+# Establish app and keys
 app = Flask(__name__)
 slack_event_adapter = SlackEventAdapter(os.environ['SIGNING_SECRET'], '/slack/events', app)
 client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = client.api_call("auth.test")['user_id']
+dbs_api = 'https://a4tyyal61e.execute-api.us-east-1.amazonaws.com/api/databases'
+dbs_key = os.environ.get('DBSERVICES_KEY')
+headers = {'x-api-key': dbs_key }
+
+
+# Set up a response at the root / path. Takes GET method.
+@app.route('/', methods=['GET'])
+def hello_world():
+    return "Hello world"
 
 BOILER = """
 Available commands for the Database Service Bot are:
@@ -24,10 +31,6 @@ Available commands for the Database Service Bot are:
                           Do not include < > characters.
   help                    Shows this command reference
 """
-
-dbs_api = 'https://a4tyyal61e.execute-api.us-east-1.amazonaws.com/api/databases'
-dbs_key = os.environ.get('DBSERVICES_KEY')
-headers = {'x-api-key': dbs_key }
 
 def list_dbservices():
     request = requests.get(dbs_api, headers=headers)
@@ -95,6 +98,3 @@ def message(payload):
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
-
-# if __name__ == "__main__":
-#     app.run(debug=True)
