@@ -35,8 +35,8 @@ def new_dbservice(dbuser, created_for, created_by):
     # created_by = str(created_by)
     # created_for = str(created_for)
     # dbuser = str(dbuser)
-    headers = {'Content-Type': 'application/json'}
-    request = requests.post(dbs_api, headers=headers, data=json.dumps(data))
+    data_package = {"dbuser":dbuser,"created_by",created_by,"created_for":created_for}
+    request = requests.post(dbs_api, headers=headers, data=json.dumps(data_package))
     return 
 
 def list_dbservices():
