@@ -70,7 +70,7 @@ def message(payload):
     event = payload.get('event',{'text'})
     user_id = event.get('user')
     text = event.get('text')
-    if len(text.split()) > 1:
+    if len(text.split()) >= 1:
     # if text.split()[0] is not None:
         first = text.split()[0]
     else:
