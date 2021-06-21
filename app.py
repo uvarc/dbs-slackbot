@@ -12,8 +12,7 @@ client = slack.WebClient(token=os.environ['SLACK_TOKEN'])
 BOT_ID = client.api_call("auth.test")['user_id']
 dbs_api = 'https://a4tyyal61e.execute-api.us-east-1.amazonaws.com/api/databases'
 dbs_key = os.environ.get('DBSERVICES_KEY')
-headers = {'x-api-key': dbs_key }
-
+headers = {'x-api-key': dbs_key, 'Content-Type': 'application/json'}
 
 # Set up a response at the root / path. Takes GET method.
 @app.route('/', methods=['GET'])
@@ -31,6 +30,14 @@ Available commands for the Database Service Bot are:
                           Do not include < > characters.
   help                    Shows this command reference
 """
+
+def new_dbservice(dbuser, created_for, created_by):
+    # created_by = str(created_by)
+    # created_for = str(created_for)
+    # dbuser = str(dbuser)
+    headers = {'Content-Type': 'application/json'}
+    request = requests.post(dbs_api, headers=headers, data=json.dumps(data))
+    return 
 
 def list_dbservices():
     request = requests.get(dbs_api, headers=headers)
@@ -65,7 +72,7 @@ def detail_dbservice(dbid):
     created = payload['created_on']
     created_on = created[0:10]
     r+="Status:       " + dbstatus + '\nCreated for:  ' + created_for + '\nCreated by:   ' + created_by + '\nCreated on:   ' + created_on + '\n\nDB User:      ' + dbuser + '\nDB Pass:      ' + dbpass + '\nDB Host:      dbs.hpc.uvadcos.io' + '\nDB Port:      3306'
-    print(dbstatus)
+    # print(dbstatus)
     return r
 
 @slack_event_adapter.on('message')
@@ -87,7 +94,13 @@ def message(payload):
     elif first == 'new':
         # dbuser = text.split()[1]
         # created_for = text.split()[2]
-        msg_text = 'This function not yet implemented.'
+        dbname = "testing1"
+        created_for = "nem2p"
+        created_by = "cag3fr"
+        new_dbservice(dbname, created_for, created_by)
+        # msg_text = 'This function not yet implemented.'
+        msg_text = "Request submitted"
+
     elif first == 'add':
         msg_text = 'New database requested'
     else:
