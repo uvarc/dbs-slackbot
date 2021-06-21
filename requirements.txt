@@ -1,0 +1,7 @@
+uwsgi
+slackclient
+slackeventsapi
+boto3
+botocore
+requests
+flask
