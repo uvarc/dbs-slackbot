@@ -2,8 +2,8 @@ import slack
 import os
 import requests
 import json
-# from pathlib import Path
 from flask import Flask
+from slack import WebClient
 from slackeventsapi import SlackEventAdapter
 
 # Establish app and keys
@@ -32,11 +32,9 @@ Available commands for the Database Service Bot are:
   help                    Shows this command reference
 """
 
-def new_dbservice(dbuser, created_for, created_by):
-    # created_by = str(created_by)
-    # created_for = str(created_for)
-    # dbuser = str(dbuser)
-    data_package = {"dbuser":dbuser, "created_by": created_by, "created_for":created_for}
+def new_dbservice(dbuser, created_for):
+    slackuser = 'uvarc'
+    data_package = {"dbuser":dbuser, "created_by": slackuser, "created_for":created_for}
     request = requests.post(dbs_api, headers=headers, data=json.dumps(data_package))
     return 
 
@@ -72,39 +70,35 @@ def detail_dbservice(dbid):
     dbstatus = payload['dbstatus']
     created = payload['created_on']
     created_on = created[0:10]
-    r+="Status:       " + dbstatus + '\nCreated for:  ' + created_for + '\nCreated by:   ' + created_by + '\nCreated on:   ' + created_on + '\n\nDB User:      ' + dbuser + '\nDB Pass:      ' + dbpass + '\nDB Host:      dbs.hpc.uvadcos.io' + '\nDB Port:      3306'
+    r+="Status:       " + dbstatus + '\nCreated by:   ' + created_by + '\nCreated on:   ' + created_on + '\n\nDB User:      ' + dbuser + '\nDB Pass:      ' + dbpass + '\nDB Host:      dbs.hpc.uvadcos.io' + '\nDB Port:      3306'
     # print(dbstatus)
     return r
 
 @slack_event_adapter.on('message')
 def message(payload):
     event = payload.get('event',{'text'})
-    print(event)
+    # print(event)
     user_id = event.get('user')
     text = event.get('text')
     if len(text.split()) >= 1:
-    # if text.split()[0] is not None:
         first = text.split()[0]
     else:
-        first = 'help'
+        first = text
     if first == 'list':
         msg_text = list_dbservices()
     elif first == 'show':
         dbid = text.split()[1]
-        print(dbid)
+        # print(dbid)
         msg_text = detail_dbservice(dbid)
     elif first == 'new':
-        # dbuser = text.split()[1]
-        # created_for = text.split()[2]
-        dbname = "testing1"
-        created_for = "nem2p"
-        created_by = "cag3fr"
-        new_dbservice(dbname, created_for, created_by)
-        # msg_text = 'This function not yet implemented.'
-        msg_text = "Request submitted"
-
-    elif first == 'add':
-        msg_text = 'New database requested'
+        if len(text.split()) == 3:
+            dbname = text.split()[1]
+            created_for = text.split()[2]
+            new_dbservice(dbname, created_for)
+            # msg_text = 'This function not yet implemented.'
+            msg_text = "Database Service submitted. Please wait for creation."
+        else:
+            msg_text = "Please enter two additional parameters, <dbname> and <created_for>"
     else:
         msg_text = BOILER
     pre = '```' + msg_text + '```'
