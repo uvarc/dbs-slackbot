@@ -36,7 +36,7 @@ def new_dbservice(dbuser, created_for, created_by):
     # created_by = str(created_by)
     # created_for = str(created_for)
     # dbuser = str(dbuser)
-    data_package = {"dbuser":dbuser,"created_by",created_by,"created_for":created_for}
+    data_package = {"dbuser":dbuser, "created_by": created_by, "created_for":created_for}
     request = requests.post(dbs_api, headers=headers, data=json.dumps(data_package))
     return 
 
@@ -79,6 +79,7 @@ def detail_dbservice(dbid):
 @slack_event_adapter.on('message')
 def message(payload):
     event = payload.get('event',{'text'})
+    print(event)
     user_id = event.get('user')
     text = event.get('text')
     if len(text.split()) >= 1:
