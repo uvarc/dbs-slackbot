@@ -32,7 +32,7 @@ Available commands for the Database Service Bot are:
   help                    Shows this command reference
 """
 
-def post_message(msg_text):
+def post_message(msg_text,user_id):
     pre = '```' + msg_text + '```'
     if BOT_ID != user_id:
         client.chat_postMessage(channel='#dbs', text=pre)
@@ -91,11 +91,11 @@ def message(payload):
         first = text
     if first == 'list':
         msg_text = list_dbservices()
-        post_message(msg_text)
+        post_message(msg_text,user_id)
     elif first == 'show':
         dbid = text.split()[1]
         msg_text = detail_dbservice(dbid)
-        post_message(msg_text)
+        post_message(msg_text,user_id)
     elif first == 'Status':
         var = "value"
     elif first == 'new':
@@ -105,13 +105,13 @@ def message(payload):
             new_dbservice(dbname, created_for)
             # msg_text = 'This function not yet implemented.'
             msg_text = "Database Service submitted. Please wait for creation."
-            post_message(msg_text)
+            post_message(msg_text,user_id)
         else:
             msg_text = "Please enter two additional parameters, <dbname> and <created_for>"
-            post_message(msg_text)
+            post_message(msg_text,user_id)
     else:
         msg_text = BOILER
-        post_message(msg_text)
+        post_message(msg_text,user_id)
 
 
 if __name__ == '__main__':
