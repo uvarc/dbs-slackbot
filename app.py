@@ -90,6 +90,9 @@ def message(payload):
         dbid = text.split()[1]
         # print(dbid)
         msg_text = detail_dbservice(dbid)
+    elif first == 'Status':
+        # print(dbid)
+        return None
     elif first == 'new':
         if len(text.split()) == 3:
             dbname = text.split()[1]
