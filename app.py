@@ -32,6 +32,11 @@ Available commands for the Database Service Bot are:
   help                    Shows this command reference
 """
 
+def post_message(msg_text):
+    pre = '```' + msg_text + '```'
+    if BOT_ID != user_id:
+        client.chat_postMessage(channel='#dbs', text=pre)
+
 def new_dbservice(dbuser, created_for):
     slackuser = 'uvarc'
     data_package = {"dbuser":dbuser, "created_by": slackuser, "created_for":created_for}
@@ -86,13 +91,13 @@ def message(payload):
         first = text
     if first == 'list':
         msg_text = list_dbservices()
+        post_message(msg_text)
     elif first == 'show':
         dbid = text.split()[1]
-        # print(dbid)
         msg_text = detail_dbservice(dbid)
+        post_message(msg_text)
     elif first == 'Status':
-        # print(dbid)
-        return None
+        var = "value"
     elif first == 'new':
         if len(text.split()) == 3:
             dbname = text.split()[1]
@@ -100,13 +105,14 @@ def message(payload):
             new_dbservice(dbname, created_for)
             # msg_text = 'This function not yet implemented.'
             msg_text = "Database Service submitted. Please wait for creation."
+            post_message(msg_text)
         else:
             msg_text = "Please enter two additional parameters, <dbname> and <created_for>"
+            post_message(msg_text)
     else:
         msg_text = BOILER
-    pre = '```' + msg_text + '```'
-    if BOT_ID != user_id:
-        client.chat_postMessage(channel='#dbs', text=pre)
+        post_message(msg_text)
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
